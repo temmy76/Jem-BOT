@@ -17,11 +17,11 @@ client = commands.Bot(command_prefix="!", intents=discord.Intents.all(), help_co
 def convert_to_int(target_honor: str):
     if "," in target_honor:
         target_honor = target_honor.replace(",", ".")
-    if target_honor[-1] == "b":
+    if target_honor[-1] == "b" or target_honor[-1] == "B":
         target_honor = float(target_honor[:-1]) * 1000000000
-    elif target_honor[-1] == "m":
+    elif target_honor[-1] == "m" or target_honor[-1] == "M":
         target_honor = float(target_honor[:-1]) * 1000000
-    elif target_honor[-1] == "k":
+    elif target_honor[-1] == "k" or target_honor[-1] == "K":
         target_honor = float(target_honor[:-1]) * 1000
     else:
         target_honor = float(target_honor)
@@ -136,9 +136,9 @@ async def ppkm(
 ):
     temp_target_honor = convert_to_int(target_honor)
     target_honor = int(temp_target_honor) / 1000
-    if target_honor < convert_to_int("500m"):
+    if target_honor * 1000 < convert_to_int("1b"):
         await ctx.reply(
-            "Target honor minimal 500m", mention_author=False,
+            "Target honor minimal 1B", mention_author=False,
         )
         await ctx.send("https://media.discordapp.net/attachments/627855503921512487/927122622746087434/unknown.png")
         return
