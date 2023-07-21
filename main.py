@@ -233,11 +233,14 @@ async def help(ctx, command: typing.Optional[str] = None):
     "Menghitung jumlah meat yang didapat dari jumlah honor yang diinputkan",
     "ppkm":
     "Menghitung jumlah meat yang digunakan setiap hari untuk mencapai honor yang diinginkan",
+    "honor":
+    "Menghitung jumlah meat yang dibutuhkan untuk mencapai honor yang diinginkan berdasarkan NM yang dipilih",
   }
   usage = {
     "meat": "`!meat *<meat>`",
     "meathonor": "`!meathonor *<honor>`",
     "ppkm": "`!ppkm *<honor> -<NM> -<day1> -<day2> -<day3>`",
+    "honor": "`!honor *<honor> -<NM>`",
   }
   command_key = list(commands.keys())
   if command is None:
@@ -271,12 +274,29 @@ async def help(ctx, command: typing.Optional[str] = None):
   description="return amount of meat based on target honor and NM difficulties"
 )
 async def honor(ctx, target_honor: str, NM: typing.Optional[str] = "150"):
-  meat = {'95': 10, '150': 20, '200': 30}
+  meat = {"95": 10, "150": 20, "200": 30}
+  honor = {"95": 910, "150": 4100, "200": 10200}
+  temp_target_honor = convert_to_int(target_honor)
+  target_honor = temp_target_honor / 1000
 
-  total_meat = target_honor // meat[NM]
+  if NM not in ["95", "150", "200"]:
+    await ctx.send("Invalid NM")
+    return
+
+  if temp_target_honor < convert_to_int("10m"):
+    await ctx.send("Invalid target honor")
+    return
+
+  meat_needed = ceil(target_honor / honor[NM]) * meat[NM]
+
   embed = discord.Embed(title="Jem-BOT")
-
-  await ctx.send("test")
+  embed.add_field(
+    name="**Honor Calculator**",
+    value="**{:,}** honors require **{:,}** amount of meats".format(
+      temp_target_honor, meat_needed),
+    inline=False,
+  )
+  await ctx.reply(embed=embed, mention_author=False)
 
 
 async def main():
