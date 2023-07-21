@@ -15,6 +15,13 @@ client = commands.Bot(command_prefix="!",
                       intents=discord.Intents.all(),
                       help_command=None)
 
+MEAT95  = 10
+MEAT150 = 20
+MEAT200 = 20
+
+HONOR95 = 910
+HONOR150 = 4100
+HONOR200 = 13300
 
 def convert_to_int(target_honor: str):
   if "," in target_honor:
@@ -41,7 +48,7 @@ async def sync(ctx):
     await ctx.send("You are not allowed to use this command")
     return
   await ctx.send("Syncing...")
-  await client.tree.sync()
+  await client.tree.sync(guild=discord.Object(id=570971545380585473))
   await ctx.send("Synced!")
 
 
@@ -90,10 +97,10 @@ async def meat(ctx, value: str):
     if meat < 5:
       raise ValueError("False")
     nm90 = meat // 5
-    nm95 = meat // 10
-    nm100 = meat // 20
-    nm150 = meat // 20
-    nm200 = meat // 30
+    nm95 = meat // MEAT95
+    nm100 = meat // MEAT150
+    nm150 = meat // MEAT150
+    nm200 = meat // MEAT200
     embed.set_thumbnail(
       url=
       "https://cdn.discordapp.com/attachments/828790440240087052/1062699739147141160/image.png"
@@ -106,13 +113,13 @@ async def meat(ctx, value: str):
         nm90,
         nm90 * 260000,
         nm95,
-        nm95 * 910000,
+        nm95 * (HONOR95 * 1000),
         nm100,
         nm100 * 2650000,
         nm150,
-        nm150 * 4100000,
+        nm150 * (HONOR150 * 1000),
         nm200,
-        nm200 * 10200000,
+        nm200 * (HONOR200 * 1000),
       ),
       inline=False,
     )
@@ -156,24 +163,17 @@ async def ppkm(
   HONOR_D3 = int(convert_to_int(day3) / 1000)
   honor_d4 = 150000
 
-  meat95 = 10
-  meat150 = 20
-  meat200 = 30
-
-  honor95 = 910
-  honor150 = 4100
-  honor200 = 10200
 
   if NM == "150":
-    DAY1 = ceil(HONOR_D1 / honor95) * meat95
-    DAY2 = ceil(HONOR_D2 / honor150) * meat150
-    DAY3 = ceil(HONOR_D3 / honor150) * meat150
-    day4 = ceil(honor_d4 / honor150) * meat150
+    DAY1 = ceil(HONOR_D1 / HONOR95) * MEAT95
+    DAY2 = ceil(HONOR_D2 / HONOR150) * MEAT150
+    DAY3 = ceil(HONOR_D3 / HONOR150) * MEAT150
+    day4 = ceil(honor_d4 / HONOR150) * MEAT150
   elif NM == "200":
-    DAY1 = ceil(HONOR_D1 / honor95) * meat95
-    DAY2 = ceil(HONOR_D2 / honor150) * meat150
-    DAY3 = ceil(HONOR_D3 / honor200) * meat200
-    day4 = ceil(honor_d4 / honor200) * meat200
+    DAY1 = ceil(HONOR_D1 / HONOR95) * MEAT95
+    DAY2 = ceil(HONOR_D2 / HONOR150) * MEAT150
+    DAY3 = ceil(HONOR_D3 / HONOR200) * MEAT200
+    day4 = ceil(honor_d4 / HONOR200) * MEAT200
 
   meat_track_init = DAY1 + DAY2 + DAY3 + day4
 
@@ -183,8 +183,8 @@ async def ppkm(
   honor_total_init = (honor_interlud_init + HONOR_PRELIM + HONOR_D1 +
                       HONOR_D2 + HONOR_D3 + honor_d4)
 
-  honorgain = honor150 if NM == "150" else honor200
-  meatgain = meat150 if NM == "150" else meat200
+  honorgain = HONOR150 if NM == "150" else HONOR200
+  meatgain = MEAT150 if NM == "150" else MEAT200
   while honor_total_init < int(target_honor):
     honor_d4 += honorgain
     meat_interlud_init += meatgain
@@ -192,8 +192,8 @@ async def ppkm(
     honor_interlud_init += meatgain * 10
     honor_total_init = honor_total_init + honor_interlud_init + honorgain
 
-  day4 = (ceil(honor_d4 / honor150) *
-          meat150 if NM == "150" else ceil(honor_d4 / honor200) * meat200)
+  day4 = (ceil(honor_d4 / HONOR150) *
+          MEAT150 if NM == "150" else ceil(honor_d4 / HONOR200) * MEAT200)
 
   # TODO
   # send the honor and meat for interlude
@@ -274,8 +274,8 @@ async def help(ctx, command: typing.Optional[str] = None):
   description="return amount of meat based on target honor and NM difficulties"
 )
 async def honor(ctx, target_honor: str, NM: typing.Optional[str] = "150"):
-  meat = {"95": 10, "150": 20, "200": 30}
-  honor = {"95": 910, "150": 4100, "200": 10200}
+  meat = {"95": MEAT95, "150": MEAT150, "200": MEAT150}
+  honor = {"95": HONOR95, "150": HONOR150, "200": HONOR200}
   temp_target_honor = convert_to_int(target_honor)
   target_honor = temp_target_honor / 1000
 
